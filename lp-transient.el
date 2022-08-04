@@ -185,23 +185,22 @@ itself."
   "List of options that will be passed by default to `lp'.")
 
 (defun lp-transient--read-printer (prompt initial-input history)
-  "Read print name.
+  "Read printer name.
 Uses the command `lpstat -a' to show a list of printers. If
 `async-completing-read' and `acr-preprocess-lines-from-process'
 are defined, use these functions to show the list
 asynchronously."
-  (if (and (fboundp 'async-completing-read)
-           (fboundp 'acr-preprocess-lines-from-process))
-      (let ((preprocess-lines-fun ;; Remove leading spaces
-             (lambda (x)
-               ;; Accept only the first word in a each line
-               (mapcar
-                (lambda (y)
-                  (let ((ind (string-match "[[:space:]]" y)))
-                    (if ind
-                        (substring y nil ind)
-                      y)))
-                x))))
+  (let ((preprocess-lines-fun
+         (lambda (x)
+           ;; Accept only the first word in each line
+           (mapcar
+            (lambda (y)
+              (let ((ind (string-match "[[:space:]]" y)))
+                (if ind
+                    (substring y nil ind)
+                  y)))
+            x))))
+    (if (fboundp 'async-completing-read)
         (if (fboundp 'acr-preprocess-lines-from-process)
             (async-completing-read
              prompt
@@ -209,20 +208,20 @@ asynchronously."
               preprocess-lines-fun
               "lpstat" "-a")
              nil nil initial-input history)
-          (funcall preprocess-lines-fun
-                   (async-completing-read
-                    prompt
-                    (acr-lines-from-process "lpstat" "-a")
-                    nil nil initial-input history))))
-    (completing-read
-     prompt
-     (funcall preprocess-lines-fun
-              (split-string
-               (with-temp-buffer
-                 (call-process "lpstat" nil t nil "-a")
-                 (buffer-string))
-               "\n" 'omit-nulls))
-     nil nil initial-input history)))
+          (car (funcall preprocess-lines-fun
+                        (list (async-completing-read
+                               prompt
+                               (acr-lines-from-process "lpstat" "-a")
+                               nil nil initial-input history)))))
+      (completing-read
+       prompt
+       (funcall preprocess-lines-fun
+                (split-string
+                 (with-temp-buffer
+                   (call-process "lpstat" nil t nil "-a")
+                   (buffer-string))
+                 "\n" 'omit-nulls))
+       nil nil initial-input history))))
 
 (defun lp-transient--read-pages (prompt initial-input history)
   "Read pages that will be printed.
