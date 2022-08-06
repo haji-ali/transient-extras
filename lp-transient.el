@@ -46,46 +46,9 @@
 (require 'transient)
 (require 'transient-extras)
 
-(defclass lp-transient-switches (transient-switches) ()
-  "Class used for mutually exclusive command-line switches.
-Similar to `transient-switches' except it allows choices to
-contain different values and labels. In particular, Each element
-in `choices' is a cons of (value . \"label\") and label is used
-for the display.")
-
-(cl-defmethod transient-infix-read ((obj lp-transient-switches))
-  "Cycle through the mutually exclusive switches in `choices'."
-  (let* ((choices (mapcar
-                   (apply-partially #'format (oref obj argument-format))
-                   (mapcar
-                    (lambda (x)
-                                        ; Return car of X if it is a cons, otherwise return X.
-                      (if (consp x) (car x) x))
-                    (oref obj choices)))))
-    (if-let ((value (oref obj value)))
-        (cadr (member value choices))
-      (car choices))))
-
-(cl-defmethod transient-format-value ((obj lp-transient-switches))
-  "Format OBJ's value for display and return the result."
-  (with-slots (value argument-format choices) obj
-    (format (concat
-             (mapconcat
-              (lambda (choice)
-                (propertize
-                 (if (consp choice) (cdr choice) choice)
-                 'face
-                 (if (equal (format argument-format
-                                    (if (consp choice) (car choice) choice))
-                            value)
-                     'transient-value
-                   'transient-inactive-value)))
-              choices
-              (propertize "|" 'face 'transient-inactive-value))))))
-
 (transient-define-argument lp-transient--orientation ()
   :description "Print Orientation"
-  :class 'lp-transient-switches
+  :class 'transient-extras-exclusive-switch
   :key "o"
   :argument-format "-oorientation-requested=%s"
   :argument-regexp "\\(-oorientation-requested=\\(4\\|5\\|6\\)\\)"
@@ -95,7 +58,7 @@ for the display.")
 
 (transient-define-argument lp-transient--quality ()
   :description "Print Quality"
-  :class 'lp-transient-switches
+  :class 'transient-extras-exclusive-switch
   :key "l"
   :argument-format "-oprint-quality=%s"
   :argument-regexp "\\(-oprint-quality=\\(3\\|4\\|5\\)\\)"
@@ -105,7 +68,7 @@ for the display.")
 
 (transient-define-argument lp-transient--per-page ()
   :description "Per page"
-  :class 'lp-transient-switches
+  :class 'transient-extras-exclusive-switch
   :key "C"
   :argument-format "-onumber-up=%s"
   :argument-regexp "\\(-onumber-up=\\(2\\|4\\|6\\|9\\|16\\)\\)"
@@ -113,7 +76,7 @@ for the display.")
 
 (transient-define-argument lp-transient--media ()
   :description "Page size"
-  :class 'lp-transient-switches
+  :class 'transient-extras-exclusive-switch
   :key "m"
   :argument-format "-omedia=%s"
   :argument-regexp "\\(-omedia=\\(a4\\|letter\\|legal\\)\\)"
@@ -121,7 +84,7 @@ for the display.")
 
 (transient-define-argument lp-transient--sides ()
   :description "Sides"
-  :class 'lp-transient-switches
+  :class 'transient-extras-exclusive-switch
   :key "s"
   :argument-format "-osides=%s"
   :argument-regexp "\\(-osides=\\(one-sided\\|two-sided-long-edge\\|two-sided-short-edge\\)\\)"

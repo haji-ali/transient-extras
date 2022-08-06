@@ -68,6 +68,48 @@ Returns a list containing the filename. The file must exist."
                       (transient-extras--get-default-file-list-or-buffer)))
   :class 'transient-extras-files-or-buffer)
 
+
+;;; Switches with mutual exclusion
+
+(defclass transient-extras-exclusive-switch (transient-switches) ()
+  "Class used for mutually exclusive command-line switches.
+Similar to `transient-switches' except it allows choices to
+contain different values and labels. In particular, Each element
+in `choices' is a cons of (value . \"label\") and label is used
+for the display.")
+
+(cl-defmethod transient-infix-read ((obj transient-extras-exclusive-switch))
+  "Cycle through the mutually exclusive switches in `choices'."
+  (let* ((choices (mapcar
+                   (apply-partially #'format (oref obj argument-format))
+                   (mapcar
+                    (lambda (x)
+                                        ; Return car of X if it is a cons, otherwise return X.
+                      (if (consp x) (car x) x))
+                    (oref obj choices)))))
+    (if-let ((value (oref obj value)))
+        (cadr (member value choices))
+      (car choices))))
+
+(cl-defmethod transient-format-value ((obj transient-extras-exclusive-switch))
+  "Format OBJ's value for display and return the result."
+  (with-slots (value argument-format choices) obj
+    (format (concat
+             (mapconcat
+              (lambda (choice)
+                (propertize
+                 (if (consp choice) (cdr choice) choice)
+                 'face
+                 (if (equal (format argument-format
+                                    (if (consp choice) (car choice) choice))
+                            value)
+                     'transient-value
+                   'transient-inactive-value)))
+              choices
+              (propertize "|" 'face 'transient-inactive-value))))))
+
+;; TODO: Maybe use `choices' slot to `transient-init-value'
+
 (provide 'transient-extras)
 
 ;;; transient-extras.el ends here
