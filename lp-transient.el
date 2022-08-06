@@ -44,6 +44,7 @@
 
 
 (require 'transient)
+(require 'transient-extras)
 
 (defclass lp-transient-switches (transient-switches) ()
   "Class used for mutually exclusive command-line switches.
@@ -52,33 +53,13 @@ contain different values and labels. In particular, Each element
 in `choices' is a cons of (value . \"label\") and label is used
 for the display.")
 
-;; TODO: (Planned feature) A way to add/remove files instead of replacing.
-;; For example by pressing:
-;; `-+': add files
-;; `-=': remove files
-;; `--': replace files
-
-(defun lp-transient-read-file (prompt _initial-input _history)
-  "Read a file name.
-Returns a list containing the filename. The file must exist."
-  (list (file-local-name (expand-file-name
-                          (read-file-name prompt nil nil t)))))
-
-(defclass lp-transient-files-or-buf (transient-infix)
-  ((key         :initform "--")
-   (argument    :initform "--")
-   (reader      :initform #'lp-transient-read-file)
-   (always-read :initform t))
-  "A transient class to read list of files.
-The slot `value' is either a list of files or a single buffer.")
-
 (cl-defmethod transient-infix-read ((obj lp-transient-switches))
   "Cycle through the mutually exclusive switches in `choices'."
   (let* ((choices (mapcar
                    (apply-partially #'format (oref obj argument-format))
                    (mapcar
                     (lambda (x)
-                      ; Return car of X if it is a cons, otherwise return X.
+                                        ; Return car of X if it is a cons, otherwise return X.
                       (if (consp x) (car x) x))
                     (oref obj choices)))))
     (if-let ((value (oref obj value)))
@@ -101,22 +82,6 @@ The slot `value' is either a list of files or a single buffer.")
                    'transient-inactive-value)))
               choices
               (propertize "|" 'face 'transient-inactive-value))))))
-
-(cl-defmethod transient-format-value ((obj lp-transient-files-or-buf))
-  "Format OBJ's value for display and return the result."
-  (let ((argument (oref obj argument)))
-    (if-let ((value (oref obj value)))
-        (propertize
-         (if (listp value)
-             ;; Should be list of files.
-             (mapconcat (lambda (x)
-                          (file-relative-name
-                           (abbreviate-file-name (string-trim x "\"" "\""))))
-                        value " ")
-           ;; Should be a buffer
-           (prin1-to-string value))
-         'face 'transient-value)
-      (propertize argument 'face 'transient-inactive-value))))
 
 (transient-define-argument lp-transient--orientation ()
   :description "Print Orientation"
@@ -161,25 +126,6 @@ The slot `value' is either a list of files or a single buffer.")
   :argument-format "-osides=%s"
   :argument-regexp "\\(-osides=\\(one-sided\\|two-sided-long-edge\\|two-sided-short-edge\\)\\)"
   :choices '("one-sided" "two-sided-long-edge" "two-sided-short-edge"))
-
-(defun lp-transient--get-default-file-or-buf ()
-  "Return the default list of files or buffer to print.
-In `dired-mode', get the marked files. In other modes, if a
-buffer has a file get the filename, otherwise return the buffer
-itself."
-  (if (derived-mode-p 'dired-mode)
-      (dired-get-marked-files)
-    (or (when-let (ff (buffer-file-name))
-          (list ff))
-        (current-buffer))))
-
-(transient-define-argument lp-transient--files ()
-  :description "Files"
-  :init-value (lambda (obj)
-                (setf
-                 (slot-value obj 'value) ; get value
-                 (lp-transient--get-default-file-or-buf)))
-  :class 'lp-transient-files-or-buf)
 
 (defvar lp-transient-saved-options nil
   "List of options that will be passed by default to `lp'.")
@@ -238,7 +184,7 @@ in `pdf-mode' and display the maximum in the prompt."
   "Call `lp' with list of files or a buffer.
 BUF-OR-FILES is a buffer or a list of files. ARGS are the
 arguments that should be passed to `lp'"
-  (interactive (list (lp-transient--get-default-file-or-buf)))
+  (interactive (list (transient-extras--get-default-file-list-or-buffer)))
   (unless (or (bufferp buf-or-files)
               (listp buf-or-files))
     (user-error "Wrong first argument to `lp-transient'"))
@@ -285,7 +231,7 @@ options are automatically selected."
   :init-value (lambda (obj)
                 (oset obj value lp-transient-saved-options))
 
-  [(lp-transient--files)]
+  [(transient-extras-file-list-or-buffer)]
 
   [["Argument"
     ("n" "copies" "-n" :always-read t
