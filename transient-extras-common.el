@@ -1,6 +1,6 @@
 ;; transient-extras-common.el --- Extra features for transient -*- lexical-binding: t -*-
 
-;; TODO: Author Line
+;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/lp-transient
 ;; Version: 0.0.1
 ;; Package-Requires ((emacs "28.0"))
