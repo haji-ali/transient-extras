@@ -129,10 +129,10 @@ for the display.")
 
 (defclass transient-extras-options-from-command (transient-switch)
   ((command-line :initarg :command-line)
-   (filter-function :initarg :filter-function)
-   (cache-choices-p :initarg :cachep)
-   (prompt :initarg :prompt)
-   (cached-choices))
+   (filter-function :initarg :filter-function :initform #'identity)
+   (cache-choices-p :initarg :cachep :initform nil)
+   (prompt :initarg :prompt :initform "Prompt? ")
+   (cached-choices :initform nil))
   "Class used for command line options which get their arguments
 from a command.")
 
