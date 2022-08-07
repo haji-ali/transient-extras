@@ -137,15 +137,15 @@ for the display.")
 from a command.")
 
 (cl-defmethod transient-infix-read ((obj transient-extras-options-from-command))
-  (if (slot-boundp obj 'cached-choices)
-      (completing-read (oref obj prompt) (oref obj cached-choices) nil t)
+  (if-let ((choices (oref obj cached-choices)))
+      (completing-read (oref obj prompt) choices nil t)
     (with-slots (command-line filter-function cache-choices-p prompt) obj
       (let* ((lines (split-string (with-temp-buffer
                                     (apply (apply-partially #'call-process (first command-line) nil t nil) (rest command-line))
                                     (buffer-string))
                                   "\n" 'omit-nulls))
              (choices (cl-remove-if #'null (mapcar filter-function lines))))
-        (when (and (boundp 'cache-choices-p) cache-choices-p)
+        (when cache-choices-p
           (setf (oref obj cached-choices) choices))
         (completing-read prompt choices nil t)))))
 
