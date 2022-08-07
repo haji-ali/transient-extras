@@ -13,12 +13,6 @@
 
 ;;; Files Lists
 
-;; TODO: (Planned feature) A way to add/remove files instead of replacing.
-;; For example by pressing:
-;; `-+': add files
-;; `-=': remove files
-;; `--': replace files
-
 (defun transient-extras--get-default-file-list-or-buffer ()
   "Return the default list of files or buffer to print.
 In `dired-mode', get the marked files.  In other modes, if a
