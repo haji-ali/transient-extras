@@ -7,6 +7,7 @@
 ;;; Commentary:
 
 (require 'transient)
+(require 'cl)
 
 ;;; Code:
 
@@ -103,6 +104,31 @@ for the display.")
               (propertize "|" 'face 'transient-inactive-value))))))
 
 ;; TODO: Maybe use `choices' slot to `transient-init-value'
+
+
+;;; Read from command
+
+(defclass transient-extras-options-from-command (transient-switch)
+  ((command-line :initarg :command-line)
+   (filter-function :initarg :filter-function)
+   (cache-choices-p :initarg :cachep)
+   (prompt :initarg :prompt)
+   (cached-choices))
+  "Class used for command line options which get their arguments
+from a command.")
+
+(cl-defmethod transient-infix-read ((obj transient-extras-options-from-command))
+  (if (slot-boundp obj 'cached-choices)
+      (completing-read (oref obj prompt) (oref obj cached-choices) nil t)
+    (with-slots (command-line filter-function cache-choices-p prompt) obj
+      (let* ((lines (split-string (with-temp-buffer
+                                    (apply (apply-partially #'call-process (first command-line) nil t nil) (rest command-line))
+                                    (buffer-string))
+                                  "\n" 'omit-nulls))
+             (choices (cl-remove-if #'null (mapcar filter-function lines))))
+        (when (and (boundp 'cache-choices-p) cache-choices-p)
+          (setf (oref obj cached-choices) choices))
+        (completing-read prompt choices nil t)))))
 
 (provide 'transient-extras)
 
