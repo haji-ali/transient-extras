@@ -84,7 +84,7 @@ for the display.")
                    (apply-partially #'format (oref obj argument-format))
                    (mapcar
                     (lambda (x)
-                                        ; Return car of X if it is a cons, otherwise return X.
+                      ;; Return car of X if it is a cons, otherwise return X.
                       (if (consp x) (car x) x))
                     (oref obj choices)))))
     (if-let ((value (oref obj value)))
