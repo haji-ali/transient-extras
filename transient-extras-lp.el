@@ -1,4 +1,4 @@
-;;; lp-transient.el --- A transient interface to lp  -*- lexical-binding:t -*-
+;;; transient-extras-lp.el --- A transient interface to lp  -*- lexical-binding:t -*-
 
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>
 ;; URL: https://github.com/haji-ali/lp-transient.git
@@ -26,18 +26,18 @@
 ;;
 ;; Typical usage:
 ;;
-;; (require 'lp-transient)
+;; (require 'transient-extras-lp)
 ;;
 ;; (with-eval-after-load 'dired
 ;;   (define-key
 ;;     dired-mode-map
-;;     (kbd "C-c C-p") #'lp-transient))
+;;     (kbd "C-c C-p") #'transient-extras-lp))
 ;; (with-eval-after-load 'pdf-tools
 ;;   (define-key
 ;;     pdf-misc-minor-mode-map
-;;     (kbd "C-c C-p") #'lp-transient))
+;;     (kbd "C-c C-p") #'transient-extras-lp))
 ;;
-;; Or simply call `lp-transient' to print the current buffer or the selected
+;; Or simply call `transient-extras-lp' to print the current buffer or the selected
 ;; files is selected in `dired'.
 
 ;;; Code:
@@ -46,7 +46,7 @@
 (require 'transient)
 (require 'transient-extras-common)
 
-(transient-define-argument lp-transient--orientation ()
+(transient-define-argument transient-extras-lp--orientation ()
   :description "Print Orientation"
   :class 'transient-extras-exclusive-switch
   :key "o"
@@ -56,7 +56,7 @@
              ("5" . "-90°")
              ("6" . "180°")))
 
-(transient-define-argument lp-transient--quality ()
+(transient-define-argument transient-extras-lp--quality ()
   :description "Print Quality"
   :class 'transient-extras-exclusive-switch
   :key "l"
@@ -66,7 +66,7 @@
              ("4" . "normal")
              ("5" . "best")))
 
-(transient-define-argument lp-transient--per-page ()
+(transient-define-argument transient-extras-lp--per-page ()
   :description "Per page"
   :class 'transient-extras-exclusive-switch
   :key "C"
@@ -74,7 +74,7 @@
   :argument-regexp "\\(-onumber-up=\\(2\\|4\\|6\\|9\\|16\\)\\)"
   :choices '("2" "4" "6" "9" "16"))
 
-(transient-define-argument lp-transient--media ()
+(transient-define-argument transient-extras-lp--media ()
   :description "Page size"
   :class 'transient-extras-exclusive-switch
   :key "m"
@@ -82,7 +82,7 @@
   :argument-regexp "\\(-omedia=\\(a4\\|letter\\|legal\\)\\)"
   :choices '("a4" "letter" "legal"))
 
-(transient-define-argument lp-transient--sides ()
+(transient-define-argument transient-extras-lp--sides ()
   :description "Sides"
   :class 'transient-extras-exclusive-switch
   :key "s"
@@ -90,7 +90,7 @@
   :argument-regexp "\\(-osides=\\(one-sided\\|two-sided-long-edge\\|two-sided-short-edge\\)\\)"
   :choices '("one-sided" "two-sided-long-edge" "two-sided-short-edge"))
 
-(transient-define-argument lp-transient--printer ()
+(transient-define-argument transient-extras-lp--printer ()
   :class 'transient-extras-options-from-command
   :description "Printer"
   :key "d"
@@ -104,10 +104,10 @@
                          line)))
   :prompt "Printer? ")
 
-(defvar lp-transient-saved-options nil
+(defvar transient-extras-lp-saved-options nil
   "List of options that will be passed by default to `lp'.")
 
-(defun lp-transient--read-pages (prompt initial-input history)
+(defun transient-extras-lp--read-pages (prompt initial-input history)
   "Read pages that will be printed.
 Get pages count from `pdf-info-number-of-pages' when defined and
 in `pdf-mode' and display the maximum in the prompt."
@@ -118,14 +118,14 @@ in `pdf-mode' and display the maximum in the prompt."
      prompt)
    initial-input history))
 
-(defun lp-transient (buf-or-files &optional args)
+(defun transient-extras-lp (buf-or-files &optional args)
   "Call `lp' with list of files or a buffer.
 BUF-OR-FILES is a buffer or a list of files. ARGS are the
 arguments that should be passed to `lp'"
   (interactive (list (transient-extras--get-default-file-list-or-buffer)))
   (unless (or (bufferp buf-or-files)
               (listp buf-or-files))
-    (user-error "Wrong first argument to `lp-transient'"))
+    (user-error "Wrong first argument to `transient-extras-lp'"))
 
   (let ((program (executable-find "lp")))
     (unless program
@@ -148,26 +148,26 @@ arguments that should be passed to `lp'"
       (message "Print job started: %s"
                (mapconcat #'identity cmd " ")))))
 
-(defun lp-transient/save-options (args)
+(defun transient-extras-lp/save-options (args)
   "Save printer options as default.
 The options, taken from `transient' by default, are saved so
 that the next time the `transient' menu is displayed these
 options are automatically selected."
-  (interactive (list (cdr (transient-args 'lp-transient-menu))))
-  (setq lp-transient-saved-options args)
+  (interactive (list (cdr (transient-args 'transient-extras-lp-menu))))
+  (setq transient-extras-lp-saved-options args)
   (message "Saved"))
 
-(defun lp-transient/do-print (args)
-  "Call `lp-transient' with `transient' arguments."
-  (interactive (list (transient-args 'lp-transient-menu)))
+(defun transient-extras-lp/do-print (args)
+  "Call `transient-extras-lp' with `transient' arguments."
+  (interactive (list (transient-args 'transient-extras-lp-menu)))
   ;; NOTE: This is relying on the order. This works with latest `transient'
   ;; but future updates might break this
-  (lp-transient (car args) (cdr args)))
+  (transient-extras-lp (car args) (cdr args)))
 
-(transient-define-prefix lp-transient-menu (filename)
+(transient-define-prefix transient-extras-lp-menu (filename)
   "Call `lp' with various options"
   :init-value (lambda (obj)
-                (oset obj value lp-transient-saved-options))
+                (oset obj value transient-extras-lp-saved-options))
 
   [(transient-extras-file-list-or-buffer)]
 
@@ -178,28 +178,30 @@ options are automatically selected."
     ("p" "Pages" "-P" :always-read t
      :class transient-option
      :prompt "Pages? "
-     :reader lp-transient--read-pages)
-    (lp-transient--printer)]
+     :reader transient-extras-lp--read-pages)
+    (transient-extras-lp--printer)]
 
    ["Options"
-    (lp-transient--sides)
-    (lp-transient--media)
-    (lp-transient--per-page)
-    (lp-transient--orientation)
-    (lp-transient--quality)
+    (transient-extras-lp--sides)
+    (transient-extras-lp--media)
+    (transient-extras-lp--per-page)
+    (transient-extras-lp--orientation)
+    (transient-extras-lp--quality)
     ("f" "Fit to page" "-ofit-to-page")]]
 
   [["Commands"
     ("C-c C-c" "Print"
-     lp-transient/do-print
+     transient-extras-lp/do-print
      :transient nil)]
 
    ["" ("C-c C-s" "Save options"
-        lp-transient/save-options
+        transient-extras-lp/save-options
         :transient t)]])
 
 (with-eval-after-load 'savehist
   (add-to-list 'savehist-additional-variables
-               'lp-transient-saved-options))
+               'transient-extras-lp-saved-options))
 
-(provide 'lp-transient)
+(provide 'transient-extras-lp)
+
+;; End of transient-extras-lp.el
