@@ -44,7 +44,7 @@
 
 
 (require 'transient)
-(require 'transient-extras)
+(require 'transient-extras-common)
 
 (transient-define-argument lp-transient--orientation ()
   :description "Print Orientation"
