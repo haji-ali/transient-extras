@@ -178,6 +178,7 @@ for the display.")
   "Class used for command line options which get their arguments
 from a command.")
 
+;; TODO: Allow for async-completing read?
 (cl-defmethod transient-infix-read ((obj transient-extras-options-from-command))
   (if-let ((choices (oref obj cached-choices)))
       (completing-read (oref obj prompt) choices nil t)
