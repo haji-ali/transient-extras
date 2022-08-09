@@ -91,47 +91,23 @@
 short-edge\\)\\)"
   :choices '("one-sided" "two-sided-long-edge" "two-sided-short-edge"))
 
+(transient-define-argument transient-extras-lp--printer ()
+  :class 'transient-extras-options-dynamic-choices
+  :description "Printer"
+  :key "d"
+  :argument "-d"
+  :cachep t
+  :choices-function (transient-extras-get-options-from-command-output
+                     "lpstat" '("-a")
+                     (lambda (line)
+                       (let ((index (string-match "[[:space:]]" line)))
+                         (if index
+                             (substring line nil index)
+                           line))))
+  :prompt "Printer? ")
+
 (defvar transient-extras-lp-saved-options nil
   "List of options that will be passed by default to `lp'.")
-
-(defun transient-extras-lp--read-printer (prompt initial-input history)
-  "Read printer name.
-Uses the command `lpstat -a' to show a list of printers. If
-`async-completing-read' and `acr-preprocess-lines-from-process'
-are defined, use these functions to show the list
-asynchronously."
-  (let ((preprocess-lines-fun
-         (lambda (x)
-           ;; Accept only the first word in each line
-           (mapcar
-            (lambda (y)
-              (let ((ind (string-match "[[:space:]]" y)))
-                (if ind
-                    (substring y nil ind)
-                  y)))
-            x))))
-    (if (fboundp 'async-completing-read)
-        (if (fboundp 'acr-preprocess-lines-from-process)
-            (async-completing-read
-             prompt
-             (acr-preprocess-lines-from-process
-              preprocess-lines-fun
-              "lpstat" "-a")
-             nil nil initial-input history)
-          (car (funcall preprocess-lines-fun
-                        (list (async-completing-read
-                               prompt
-                               (acr-lines-from-process "lpstat" "-a")
-                               nil nil initial-input history)))))
-      (completing-read
-       prompt
-       (funcall preprocess-lines-fun
-                (split-string
-                 (with-temp-buffer
-                   (call-process "lpstat" nil t nil "-a")
-                   (buffer-string))
-                 "\n" 'omit-nulls))
-       nil nil initial-input history))))
 
 (defun transient-extras-lp--read-pages (prompt initial-input history)
   "Read pages that will be printed.
@@ -205,10 +181,7 @@ options are automatically selected."
      :class transient-option
      :prompt "Pages? "
      :reader transient-extras-lp--read-pages)
-    ("d" "Printer" "-d"
-     :prompt "Printer? "
-     :class transient-option
-     :always-read t :reader transient-extras-lp--read-printer)]
+    (transient-extras-lp--printer)]
 
    ["Options"
     (transient-extras-lp--sides)
