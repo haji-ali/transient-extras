@@ -1,26 +1,26 @@
 ;;; lp-transient.el --- A transient interface to lp  -*- lexical-binding:t -*-
-
+;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>
 ;; URL: https://github.com/haji-ali/lp-transient.git
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "28.0"))
-;; Keywords: printer, transient, gui
-
+;; Package-Requires: ((emacs "26.1"))
+;; Keywords: convenience
+;;
 ;; This file is not part of GNU Emacs.
-
+;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
-
+;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+;;
 ;;; Commentary:
 ;; This package provides a simple transient menu with common options for `lp'.
 ;;
@@ -173,7 +173,7 @@ arguments that should be passed to `lp'"
       (message "Print job started: %s"
                (mapconcat #'identity cmd " ")))))
 
-(defun lp-transient/save-options (args)
+(defun lp-transient--save-options (args)
   "Save printer options as default.
 The options, taken from `transient' by default, are saved so
 that the next time the `transient' menu is displayed these
@@ -182,7 +182,7 @@ options are automatically selected."
   (setq lp-transient-saved-options args)
   (message "Saved"))
 
-(defun lp-transient/do-print (args)
+(defun lp-transient--do-print (args)
   "Call `lp-transient' with `transient' arguments."
   (interactive (list (transient-args 'lp-transient-menu)))
   ;; NOTE: This is relying on the order. This works with latest `transient'
@@ -219,15 +219,13 @@ options are automatically selected."
 
   [["Commands"
     ("C-c C-c" "Print"
-     lp-transient/do-print
+     lp-transient--do-print
      :transient nil)]
 
    ["" ("C-c C-s" "Save options"
-        lp-transient/save-options
+        lp-transient--save-options
         :transient t)]])
 
-(with-eval-after-load 'savehist
-  (add-to-list 'savehist-additional-variables
-               'lp-transient-saved-options))
-
 (provide 'lp-transient)
+
+;;; lp-transient.el ends here

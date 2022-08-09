@@ -1,13 +1,13 @@
-;; transient-extras.el --- Extra features for transient -*- lexical-binding: t -*-
-
+;;; transient-extras.el --- Extra features for transient -*- lexical-binding: t -*-
+;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/lp-transient
 ;; Version: 0.0.1
-;; Package-Requires ((emacs "28.1"))
-;; Keywords: transient, gui
-
+;; Package-Requires: ((emacs "26.1"))
+;; Keywords: convenience
+;;
 ;; This file is not part of GNU Emacs.
-
+;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -17,10 +17,10 @@
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+;;
 ;;; Commentary:
 ;; This package provides a number of additional transient infixes and switches.
 ;;
@@ -47,6 +47,7 @@
 ;;                   ("6" . "180°")))
 
 (require 'transient)
+(require 'cl-lib)
 
 ;;; Code:
 
@@ -128,21 +129,18 @@ for the display.")
 (cl-defmethod transient-format-value ((obj transient-extras-exclusive-switch))
   "Format OBJ's value for display and return the result."
   (with-slots (value argument-format choices) obj
-    (format (concat
-             (mapconcat
-              (lambda (choice)
-                (propertize
-                 (if (consp choice) (cdr choice) choice)
-                 'face
-                 (if (equal (format argument-format
-                                    (if (consp choice) (car choice) choice))
-                            value)
-                     'transient-value
-                   'transient-inactive-value)))
-              choices
-              (propertize "|" 'face 'transient-inactive-value))))))
-
-;; TODO: Maybe use `choices' slot to `transient-init-value'
+    (mapconcat
+     (lambda (choice)
+       (propertize
+        (if (consp choice) (cdr choice) choice)
+        'face
+        (if (equal (format argument-format
+                           (if (consp choice) (car choice) choice))
+                   value)
+            'transient-value
+          'transient-inactive-value)))
+     choices
+     (propertize "|" 'face 'transient-inactive-value))))
 
 (provide 'transient-extras)
 
