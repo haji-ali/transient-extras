@@ -1,7 +1,7 @@
 ;;; transient-extras.el --- Extra features for transient -*- lexical-binding: t -*-
 ;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
-;; URL: https://github.com/haji-ali/lp-transient
+;; URL: https://github.com/haji-ali/transient-extras.git
 ;; Version: 0.0.1
 ;; Package-Requires: ((emacs "26.1"))
 ;; Keywords: convenience

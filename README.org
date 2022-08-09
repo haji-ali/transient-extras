@@ -1,43 +1,44 @@
-#+title: lp-transient.el - A transient menu for lp
+#+title: transient-extras - Extensions and application menus based on transient
 #+author: Al Haji-Ali
 #+language: en
-#+export_file_name: lp-transient.texi
+#+export_file_name: transient-extras.texi
 #+texinfo_dir_category: Emacs misc features
-#+texinfo_dir_title: lp-transient: (lp-transient).
-#+texinfo_dir_desc: A transient menu for lp
+#+texinfo_dir_title: transient-extras: (transient-extras).
+#+texinfo_dir_desc: Extensions and application menus based on transient
 
 * Introduction
+This package provides a set of extensions to [[https://github.com/magit/transient/][transient]] and interactive menus
+to common UNIX tools and applications.
 
-=lp-transient= provides a menu based on [[https://github.com/magit/transient/][transient]] to call the CUPS printing
-program =lp= on the current buffer or a selected file.
-
+* transient-extras-lp
 #+CAPTION: Printing menu
-[[file:lp-transient.png]]
+[[file:transient-extras-lp.png]]
 
-* Configuration
+=transient-extras-lp= provides a menu based on [[https://github.com/magit/transient/][transient]] to call the CUPS
+printing program =lp= on the current buffer or a selected file.
 
-=lp-transient= can be enabled for =dired= and [[https://github.com/vedang/pdf-tools/][pdf-tools]] buffers as follows
-(make sure that =lp-transient.el= is in ~load-path~)
+=transient-extras-lp= can be enabled for =dired= and [[https://github.com/vedang/pdf-tools/][pdf-tools]] buffers as follows
+(make sure that =transient-extras.el= is in ~load-path~)
 
 #+begin_src emacs-lisp
-  (require 'lp-transient)
+  (require 'transient-extras-lp)
 
   (with-eval-after-load 'dired
     (define-key
       dired-mode-map
-      (kbd "C-c C-p") #'lp-transient-menu))
+      (kbd "C-c C-p") #'transient-extras-lp-menu))
 
   (with-eval-after-load 'pdf-tools
     (define-key
       pdf-misc-minor-mode-map
-      (kbd "C-c C-p") #'lp-transient-menu))
+      (kbd "C-c C-p") #'transient-extras-lp-menu))
 #+end_src
 
-Or simply call =lp-transient= to print the current buffer or the selected
+Or simply call =transient-extras-lp-menu= to print the current buffer or the selected
 files in =dired=. If a buffer has an associated file, the file is printed,
 otherwise the buffer content is sent to =lp=.
 
-* Additional Features
+** Additional Configuration
 By pressing =d=, you can input the name of the printer. The command =lpstat
 -a= is used to get a list of installed and network printers. If you have
 [[https://github.com/haji-ali/async-completing-read][async-completing-read]] installed then the command will be run asynchronously.
