@@ -3,7 +3,7 @@
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/lp-transient
 ;; Version: 0.0.1
-;; Package-Requires ((emacs "28.0"))
+;; Package-Requires ((emacs "28.1"))
 ;; Keywords: transient, gui
 
 ;; This file is not part of GNU Emacs.
@@ -91,7 +91,7 @@ The slot `value' is either a list of files or a single buffer.")
 (defun transient-extras-read-file (prompt _initial-input _history)
   "PROMPT for file name.
 
-Returns a list containing the filename. The file must exist."
+Returns a list containing the filename.  The file must exist."
   (list (file-local-name (expand-file-name
                           (read-file-name prompt nil nil t)))))
 
@@ -107,13 +107,13 @@ Returns a list containing the filename. The file must exist."
 
 (defclass transient-extras-exclusive-switch (transient-switches) ()
   "Class used for mutually exclusive command-line switches.
-Similar to `transient-switches' except it allows choices to
-contain different values and labels. In particular, Each element
+Similar to function `transient-switches' except it allows choices to
+contain different values and labels.  In particular, Each element
 in `choices' is a cons of (value . \"label\") and label is used
 for the display.")
 
 (cl-defmethod transient-infix-read ((obj transient-extras-exclusive-switch))
-  "Cycle through the mutually exclusive switches in `choices'."
+  "Cycle through the mutually exclusive switches in `choices' slot of OBJ."
   (let* ((choices (mapcar
                    (apply-partially #'format (oref obj argument-format))
                    (mapcar
