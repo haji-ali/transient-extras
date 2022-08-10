@@ -194,6 +194,7 @@ options are automatically selected."
   "Call `lp' with various options"
   :init-value (lambda (obj)
                 (oset obj value transient-extras-lp-saved-options))
+  :man-page "lp"
 
   [(transient-extras-file-list-or-buffer)]
 
