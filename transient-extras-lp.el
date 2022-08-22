@@ -217,7 +217,10 @@ options are automatically selected."
     (transient-extras-lp--per-page)
     (transient-extras-lp--orientation)
     (transient-extras-lp--quality)
-    ("f" "Fit to page" "-ofit-to-page")]]
+    ("f" "Fit to page" "-ofit-to-page")
+    ("x" "Extra options" "-o"
+     :class transient-option
+     :always-read t)]]
 
   [["Commands"
     ("C-c C-c" "Print"
