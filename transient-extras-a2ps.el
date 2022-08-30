@@ -152,8 +152,9 @@ passed to `a2ps'."
           (process-send-string process (with-current-buffer files (buffer-string)))
           (process-send-eof process))
         (while (accept-process-output process))
-        (message "%s"
-                 (with-current-buffer buffer (buffer-string))))
+        (let ((output (with-current-buffer buffer (buffer-string))))
+          (kill-buffer buffer)
+          (message "%s" (string-trim output))))
     (error "No `a2ps' executable available")))
 
 (defun transient-extras-a2ps-do-run (arguments)
