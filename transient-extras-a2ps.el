@@ -139,16 +139,21 @@ passed to `a2ps'."
                          args
                          (and (listp files)
                               files)))
+             (buffer (generate-new-buffer "*a2ps-out-buffer*"))
              (process (make-process
                        :name "a2ps-print"
-                       :buffer nil
+                       :buffer buffer
+                       :stderr buffer
                        :connection-type 'pipe
                        :command cmd)))
+        (message "Started print job: %s"
+                 (mapconcat #'identity cmd " "))
         (when (bufferp files)
           (process-send-string process (with-current-buffer files (buffer-string)))
           (process-send-eof process))
-        (message "Started print job: %s"
-                 (mapconcat #'identity cmd " ")))
+        (while (accept-process-output process))
+        (message "%s"
+                 (with-current-buffer buffer (buffer-string))))
     (error "No `a2ps' executable available")))
 
 (defun transient-extras-a2ps-do-run (arguments)
