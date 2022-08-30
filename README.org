@@ -42,3 +42,26 @@ otherwise the buffer content is sent to =lp=.
 By pressing =d=, you can input the name of the printer. The command =lpstat
 -a= is used to get a list of installed and network printers. If you have
 [[https://github.com/haji-ali/async-completing-read][async-completing-read]] installed then the command will be run asynchronously.
+
+* transient-extras-a2ps
+
+=transient-extras-a2ps= provides a menu to call the a2ps printing
+program on the current buffer or selected file.
+
+=transient-extras-a2ps= may be enabled for dired or other buffers
+using the following code (assuming =transient-extras.el= is in the
+~load-path~):
+
+#+begin_src emacs-lisp
+  (require 'transient-extras-a2ps)
+
+  (global-set-key (kbd "C-c C-p") #'transient-extras-a2ps)
+#+end_src
+
+Note that this binding will be shadowed in places where it is
+specifically bound in a local map.
+
+** Additional Configuration
+
+All additional configuration and description of options may be found
+in [[info:a2ps][the a2ps info manual]].
