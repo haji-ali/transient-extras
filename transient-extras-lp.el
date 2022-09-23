@@ -164,7 +164,8 @@ arguments that should be passed to `lp'"
                      :name "printing"
                      :buffer nil
                      :connection-type 'pipe
-                     :command cmd)))
+                     :command cmd
+                     :stderr "*printing errors*")))
       (when (bufferp buf-or-files)
         ;; Send the buffer content to the process
         (process-send-string process
