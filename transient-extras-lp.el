@@ -115,6 +115,7 @@ asynchronously."
             (async-completing-read
              prompt
              (acr-preprocess-lines-from-process
+              'lines-from-process  ;; cateogry
               preprocess-lines-fun
               "lpstat" "-a")
              nil nil initial-input history)
