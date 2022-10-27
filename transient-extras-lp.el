@@ -91,6 +91,14 @@
 short-edge\\)\\)"
   :choices '("one-sided" "two-sided-long-edge" "two-sided-short-edge"))
 
+(defvar transient-extras-lp-executable
+  (list (executable-find "lp"))
+  "\"lp\" executable (with additional fixed args).")
+
+(defvar transient-extras-get-printers-cmd
+  (list (executable-find "lpstat") "-a")
+  "Command (with args) to get list of printers.")
+
 (defvar transient-extras-lp-saved-options nil
   "List of options that will be passed by default to `lp'.")
 
@@ -114,22 +122,29 @@ asynchronously."
         (if (fboundp 'acr-preprocess-lines-from-process)
             (async-completing-read
              prompt
-             (acr-preprocess-lines-from-process
+             (apply
+              'acr-preprocess-lines-from-process
               'lines-from-process  ;; cateogry
               preprocess-lines-fun
-              "lpstat" "-a")
+              transient-extras-get-printers-cmd)
              nil nil initial-input history)
           (car (funcall preprocess-lines-fun
                         (list (async-completing-read
                                prompt
-                               (acr-lines-from-process "lpstat" "-a")
+                               (apply
+                                'acr-lines-from-process
+                                transient-extras-get-printers-cmd)
                                nil nil initial-input history)))))
       (completing-read
        prompt
        (funcall preprocess-lines-fun
                 (split-string
                  (with-temp-buffer
-                   (call-process "lpstat" nil t nil "-a")
+                   (apply
+                    'call-process
+                    (car transient-extras-get-printers-cmd)
+                    nil t nil
+                    (cdr transient-extras-get-printers-cmd))
                    (buffer-string))
                  "\n" 'omit-nulls))
        nil nil initial-input history))))
@@ -153,27 +168,25 @@ arguments that should be passed to `lp'"
   (unless (or (bufferp buf-or-files)
               (listp buf-or-files))
     (user-error "Wrong first argument to `transient-extras-lp'"))
-
-  (let ((program (executable-find "lp")))
-    (unless program
-      (error "No print program available"))
-    (let* ((cmd (nconc (list program)
-                       args
-                       (and (listp buf-or-files)
-                            buf-or-files)))
-           (process (make-process
-                     :name "printing"
-                     :buffer nil
-                     :connection-type 'pipe
-                     :command cmd)))
-      (when (bufferp buf-or-files)
-        ;; Send the buffer content to the process
-        (process-send-string process
-                             (with-current-buffer buf-or-files
-                               (buffer-string)))
-        (process-send-eof process))
-      (message "Print job started: %s"
-               (mapconcat #'identity cmd " ")))))
+  (unless  transient-extras-lp-executable
+    (error "No print program available"))
+  (let* ((cmd (nconc transient-extras-lp-executable
+                     args
+                     (and (listp buf-or-files)
+                          buf-or-files)))
+         (process (make-process
+                   :name "printing"
+                   :buffer nil
+                   :connection-type 'pipe
+                   :command cmd)))
+    (when (bufferp buf-or-files)
+      ;; Send the buffer content to the process
+      (process-send-string process
+                           (with-current-buffer buf-or-files
+                             (buffer-string)))
+      (process-send-eof process))
+    (message "Print job started: %s"
+             (mapconcat #'identity cmd " "))))
 
 (defun transient-extras-lp--save-options (args)
   "Save printer options as default.
