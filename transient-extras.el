@@ -79,6 +79,22 @@
 ;;; Code:
 
 
+;;; Current Directory
+
+(defun transient-extras--get-default-directory ()
+  default-directory)
+
+(defclass transient-extras-directory (transient-infix)
+  ((key :initform "--")
+   (argument :initform "--")
+   (reader :initform #'transient-extras-read-directory)
+   (always-read :initform t))
+  "A transient class to read a directory.")
+
+(defun transient-extras-read-directory (prompt _initial-input _history)
+  (read-directory-name prompt default-directory-name nil t))
+
+
 ;;; Files Lists
 
 (defun transient-extras--get-default-file-list-or-buffer ()
