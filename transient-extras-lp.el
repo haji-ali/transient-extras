@@ -102,6 +102,9 @@ short-edge\\)\\)"
 (defvar transient-extras-lp-saved-options nil
   "List of options that will be passed by default to `lp'.")
 
+(defvar transient-extras-lp-dry-run nil
+  "If non-nil, lp commands are not actually issued.")
+
 (defun transient-extras-lp--read-printer (prompt initial-input history)
   "Read printer name.
 Uses the command `lpstat -a' to show a list of printers. If
@@ -170,16 +173,18 @@ arguments that should be passed to `lp'"
     (user-error "Wrong first argument to `transient-extras-lp'"))
   (unless  transient-extras-lp-executable
     (error "No print program available"))
-  (let* ((cmd (nconc transient-extras-lp-executable
-                     args
-                     (and (listp buf-or-files)
-                          buf-or-files)))
-         (process (make-process
-                   :name "printing"
-                   :buffer nil
-                   :connection-type 'pipe
-                   :command cmd)))
-    (when (bufferp buf-or-files)
+  (let* ((cmd (append transient-extras-lp-executable
+                      args
+                      (and (listp buf-or-files)
+                           buf-or-files)))
+         (process (unless transient-extras-lp-dry-run
+                    (make-process
+                     :name "printing"
+                     :buffer nil
+                     :connection-type 'pipe
+                     :command cmd))))
+    (when (and (not transient-extras-lp-dry-run)
+               (bufferp buf-or-files))
       ;; Send the buffer content to the process
       (process-send-string process
                            (with-current-buffer buf-or-files
