@@ -88,8 +88,9 @@ buffer has a file get the filename, otherwise return the buffer
 itself."
   (if (derived-mode-p 'dired-mode)
       (dired-get-marked-files)
-    (or (when-let (ff (buffer-file-name))
-          (list ff))
+    (or (let ((ff (buffer-file-name)))
+          (when (and ff (file-readable-p ff))
+            (list ff)))
         (current-buffer))))
 
 (defclass transient-extras-files-or-buffer (transient-infix)
