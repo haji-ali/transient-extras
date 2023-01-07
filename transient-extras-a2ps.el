@@ -130,7 +130,7 @@
 
 FILES is a buffer or list of files.  ARGS are other arguments
 passed to `a2ps'."
-  (interactive (list (transient-extras-a2ps--get-default-file-or-buffer)))
+  (interactive (list (transient-extras--get-default-file-list-or-buffer)))
   (unless (or (bufferp files)
               (listp files))
     (user-error "`files' must be a buffer or list"))

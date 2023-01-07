@@ -86,7 +86,7 @@
 In `dired-mode', get the marked files.  In other modes, if a
 buffer has a file get the filename, otherwise return the buffer
 itself."
-  (if (derived-mode-p 'dired-mode)
+  (if (and (derived-mode-p 'dired-mode) (fboundp 'dired-get-marked-files))
       (dired-get-marked-files)
     (or (let ((ff (buffer-file-name)))
           (when (and ff (file-readable-p ff))
