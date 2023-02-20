@@ -121,11 +121,12 @@
   ;; TODO Operations Go Here
 
 
-  [["Output"]
-   ("O" "Output File" "output "
-    :prompt "Output File? "
-    :class transient-option
-    :reader read-string)]
+
+
+  [["Output"
+    ("O" "Output File" "output "
+     :prompt "Output File? "
+     :class transient-option)]]
 
   [["Encryption"
     (transient-extras-pdftk-encrypt)
