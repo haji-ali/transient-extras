@@ -115,8 +115,7 @@
   [["Password"
     ("Ep" "Input Password" "input_pw "
      :prompt "Password? "
-     :class transient-option
-     :reader read-string)]]
+     :class transient-option)]]
 
   ;; TODO Operations Go Here
 
@@ -132,8 +131,7 @@
     (transient-extras-pdftk-encrypt)
     ("Eo" "Owner Password" "owner_pw "
      :prompt "Owner Password? "
-     :class transient-option
-     :reader read-string)]
+     :class transient-option)]
    [""
     ("Eu" "User Password" "user_pw "
      :prompt "User Password? "
@@ -158,7 +156,6 @@
     ("odp" "Drop XMP Data" "drop_xmp")
     ("or" "Replace Font" "replacement_font "
      :class transient-option
-     :reader read-string
      :prompt "Replacement Font? ")
     ("ov" "Verbose Mode" "verbose")]]
 
