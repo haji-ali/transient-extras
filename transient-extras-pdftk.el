@@ -113,7 +113,7 @@
   [(transient-extras-file-list-or-buffer)]
 
   [["Password"
-    ("p" "Input Password" "input_pw "
+    ("Ep" "Input Password" "input_pw "
      :prompt "Password? "
      :class transient-option
      :reader read-string)]]
