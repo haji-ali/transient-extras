@@ -2,7 +2,7 @@
 
 ;; Author: Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/transient-extras.git
-;; Version: 0.0.1
+;; Version: 1.0.0
 ;; Package-Requires: ((emacs "26.1") transient-extras)
 ;; Keywords: Convenience
 ;;
@@ -31,6 +31,20 @@
 
 
 ;; Options
+
+(defun transient-extras-pdftk-read-a-file (prompt initial-input _history)
+  "PROMPT for filename with INITIAL-INPUT.
+
+Returns a filepath, possibly non-existent."
+  (file-local-name (expand-file-name (read-file-name prompt nil nil nil initial-input))))
+
+(transient-define-argument transient-extras-pdftk-dump ()
+  :description "Dump Data"
+  :class 'transient-extras-exclusive-switch
+  :key "Dd"
+  :argument-format "dump_data_%s"
+  :argument-regexp "\\(dump_data_\\(utf8\\|fields\\|fields_utf8\\|annots\\)\\)"
+  :choices '("utf8" "fields" "fields_utf8" "annots"))
 
 (transient-define-argument transient-extras-pdftk-encrypt ()
   :description "Encryption Mode"
@@ -117,15 +131,56 @@
      :prompt "Password? "
      :class transient-option)]]
 
-  ;; TODO Operations Go Here
-
-
+  [["Operations"
+    ("Dc" "Cat" "cat "
+     :class transient-option
+     :prompt "Page ranges? ")
+    ("Ds" "Shuffle" "shuffle "
+     :class transient-option
+     :prompt "Page ranges? ")
+    ("Db" "Burst" "burst")
+    ("Dr" "Rotate" "rotate "
+     :class transient-option
+     :prompt "Rotate Pages? ")
+    ("Dg" "Generate FDF" "generate_fdf")
+    ("Df" "Fill Form" "fill_form "
+     :class transient-option
+     :prompt "Form data file? "
+     :reader transient-extras-pdftk-read-a-file)
+    ("DB" "Background" "background "
+     :class transient-option
+     :prompt "Background Filename? "
+     :reader transient-extras-pdftk-read-a-file)]
+   [""
+    ("Dm" "Multibackground" "multibackground "
+     :class transient-option
+     :prompt "Multibackground filename? "
+     :reader transient-extras-pdftk-read-a-file)
+    ("DS" "Stamp" "stamp "
+     :class transient-option
+     :prompt "Stamp filename? "
+     :reader #'transient-extras-pdftk-read-a-file)
+    ("DM" "Multistamp" "multistamp "
+     :class transient-option
+     :prompt "Multistamp Filename? "
+     :reader transient-extras-pdftk-read-a-file)
+    (transient-extras-pdftk-dump)
+    ("DU" "Update Info" "update_info_utf8 "
+     :class transient-option
+     :prompt "Information Filename? "
+     :reader transient-extras-pdftk-read-a-file)
+    ("Da" "Attach Files" "attach_files "
+     :class transient-option
+     :prompt "Attach Files? "
+     :reader transient-extras-pdftk-read-a-file)
+    ("Du" "Unpack Files" "unpack_files")]]
 
 
   [["Output"
     ("O" "Output File" "output "
-     :prompt "Output File? "
-     :class transient-option)]]
+     :prompt "Output Filename? "
+     :class transient-option
+     :reader transient-extras-pdftk-read-a-file)]]
 
   [["Encryption"
     (transient-extras-pdftk-encrypt)
