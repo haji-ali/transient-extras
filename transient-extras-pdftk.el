@@ -152,14 +152,15 @@
     ("oa" "Appearances" "need_appearances")
     (transient-extras-pdftk-compression)
     (transient-extras-pdftk-keep-id)
+    (transient-extras-pdftk-ask)]
+   [""
     ("oda" "Drop XFA Data" "drop_xfa")
     ("odp" "Drop XMP Data" "drop_xmp")
     ("or" "Replace Font" "replacement_font "
      :class transient-option
      :reader read-string
      :prompt "Replacement Font? ")
-    ("ov" "Verbose Mode" "verbose")
-    (transient-extras-pdftk-ask)]]
+    ("ov" "Verbose Mode" "verbose")]]
 
   [[("C-c C-c" "Run"
      transient-extras-pdftk-do-run
