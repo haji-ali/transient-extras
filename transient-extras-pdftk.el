@@ -127,9 +127,9 @@ Returns a filepath, possibly non-existent."
   [(transient-extras-file-list-or-buffer)]
 
   [["Password"
-    ("Ep" "Input Password" "input_pw "
+    ("Ep" "Input Password" "input_pw %s"
      :prompt "Password? "
-     :class transient-option)]]
+     :class transient-extras-password)]]
 
   [["Operations"
     ("Dc" "Cat" "cat "
@@ -184,13 +184,13 @@ Returns a filepath, possibly non-existent."
 
   [["Encryption"
     (transient-extras-pdftk-encrypt)
-    ("Eo" "Owner Password" "owner_pw "
+    ("Eo" "Owner Password" "owner_pw %s"
      :prompt "Owner Password? "
-     :class transient-option)]
+     :class transient-extras-password)]
    [""
-    ("Eu" "User Password" "user_pw "
+    ("Eu" "User Password" "user_pw %s"
      :prompt "User Password? "
-     :class transient-option)
+     :class transient-extras-password)
     ("Ea" "Allow" "allow "
      :prompt "Permissions? "
      :multi-value t
