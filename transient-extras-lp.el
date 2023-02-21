@@ -3,7 +3,7 @@
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>
 ;; URL: https://github.com/haji-ali/transient-extras.git
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "26.1") (transient-extras "1.0.0"))
+;; Package-Requires: ((emacs "28.1") (transient-extras "1.0.0"))
 ;; Keywords: convenience
 ;;
 ;; This file is not part of GNU Emacs.
@@ -95,7 +95,7 @@ short-edge\\)\\)"
   (list (executable-find "lp"))
   "\"lp\" executable (with additional fixed args).")
 
-(defvar transient-extras-get-printers-cmd
+(defvar transient-extras-lp-get-printers-cmd
   (list (executable-find "lpstat") "-a")
   "Command (with args) to get list of printers.")
 
@@ -106,8 +106,9 @@ short-edge\\)\\)"
   "If non-nil, lp commands are not actually issued.")
 
 (defun transient-extras-lp--read-printer (prompt initial-input history)
-  "Read printer name.
-Uses the command `lpstat -a' to show a list of printers. If
+  "PROMPT for printer name, with INITIAL-INPUT.  HISTORY, if present, is respected.
+
+Uses the command `lpstat -a' to show a list of printers.  If
 `async-completing-read' and `acr-preprocess-lines-from-process'
 are defined, use these functions to show the list
 asynchronously."
@@ -129,14 +130,14 @@ asynchronously."
               'acr-preprocess-lines-from-process
               'lines-from-process  ;; cateogry
               preprocess-lines-fun
-              transient-extras-get-printers-cmd)
+              transient-extras-lp-get-printers-cmd)
              nil nil initial-input history)
           (car (funcall preprocess-lines-fun
                         (list (async-completing-read
                                prompt
                                (apply
                                 'acr-lines-from-process
-                                transient-extras-get-printers-cmd)
+                                transient-extras-lp-get-printers-cmd)
                                nil nil initial-input history)))))
       (completing-read
        prompt
@@ -145,9 +146,9 @@ asynchronously."
                  (with-temp-buffer
                    (apply
                     'call-process
-                    (car transient-extras-get-printers-cmd)
+                    (car transient-extras-lp-get-printers-cmd)
                     nil t nil
-                    (cdr transient-extras-get-printers-cmd))
+                    (cdr transient-extras-lp-get-printers-cmd))
                    (buffer-string))
                  "\n" 'omit-nulls))
        nil nil initial-input history))))
