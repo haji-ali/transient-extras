@@ -203,6 +203,37 @@ from a function.")
       (prog1 (cl-call-next-method obj)
         (slot-makeunbound obj 'choices)))))
 
+
+;;; Passwords as options
+
+(defclass transient-extras-password (transient-option) ()
+  "Class used for reading passwords in transient menus.
+Passwords are read with `read-passwd', assumes `argument' is a
+format string.
+
+Note: in general, including passwords in command line arguments
+      is poor security practice.  Be careful when using this
+      option.")
+
+(cl-defmethod transient-infix-read ((obj transient-extras-password))
+  "Read password for OBJ."
+  (let* ((prompt (or (oref obj prompt) "Password? "))
+         (password (read-passwd prompt)))
+    (unless (string-empty-p password) password)))
+
+(cl-defmethod transient-format-value ((obj transient-extras-password))
+  "Format OBJ's value for display and return the result."
+  (with-slots (value argument) obj
+    (if value
+        (propertize (format argument (make-string (length value) ?*)) 'face 'transient-value)
+      (propertize (string-trim (format argument "")) 'face 'transient-inactive-value))))
+
+(cl-defmethod transient-infix-value ((obj transient-extras-password))
+  "Format OBJ's value for use in commands."
+  (with-slots (value argument) obj
+    (if value
+        (format argument value)
+      nil)))
 
 
 (provide 'transient-extras)
