@@ -178,6 +178,15 @@ for the display.")
   "Class used for command line options which get their arguments
 from a function.")
 
+(cl-defmethod transient-infix-read :around ((obj transient-extras-option-dynamic-choices))
+  "When reading with OBJ, gather options and optionally cache."
+  (with-slots (choices-function) obj
+    (let ((choices (funcall choices-function)))
+      (setf (oref obj choices) choices)
+      (message "Choices are %s" choices)
+      (prog1 (cl-call-next-method obj)
+        (slot-makeunbound obj 'choices)))))
+
 (defun transient-extras-filter-command-output (program arguments filter)
   "FILTER output of PROGRAM run with ARGUMENTS."
   (cl-remove-if #'null (mapcar filter
@@ -193,15 +202,6 @@ from a function.")
   "Return a function to FILTER output of PROGRAM with ARGUMENTS."
   (lambda ()
     (transient-extras-filter-command-output program arguments filter)))
-
-(cl-defmethod transient-infix-read :around ((obj transient-extras-option-dynamic-choices))
-  "When reading with OBJ, gather options and optionally cache."
-  (with-slots (choices-function) obj
-    (let ((choices (funcall choices-function)))
-      (setf (oref obj choices) choices)
-      (message "Choices are %s" choices)
-      (prog1 (cl-call-next-method obj)
-        (slot-makeunbound obj 'choices)))))
 
 
 
