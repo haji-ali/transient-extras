@@ -44,6 +44,8 @@ By pressing =d=, you can input the name of the printer. The command =lpstat
 [[https://github.com/haji-ali/async-completing-read][async-completing-read]] installed then the command will be run asynchronously.
 
 * transient-extras-a2ps
+#+CAPTION: a2ps menu
+[[file:screenshots/transient-extras-a2ps.png]]
 
 =transient-extras-a2ps= provides a menu to call the a2ps printing
 program on the current buffer or selected file.
