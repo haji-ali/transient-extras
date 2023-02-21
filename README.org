@@ -65,3 +65,26 @@ specifically bound in a local map.
 
 All additional configuration and description of options may be found
 in [[info:a2ps][the a2ps info manual]].
+
+* transient-extras-pdftk
+#+CAPTION: pdftk menu
+[[file:transient-extras-pdftk.png]]
+
+=transient-extras-pdftk= provides a basic menu based on transient to
+call the PDF manipulation program, [[https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/][pdftk]] on the current buffer or
+selected files.
+
+The transient menu may be enable for [[https://github.com/vedang/pdf-tools/][pdf-tools]] buffers as follows
+(ensure that =transient-extras.el= is on ~load-path~):
+
+#+begin_src emacs-lisp
+  (require 'transient-extras-pdftk)
+
+  (with-eval-after-load 'pdf-tools
+    (define-key pdf-misc-minor-mode-map (kbd "C-c t") #'transient-extras-pdftk))
+#+end_src
+
+You may also call =transient-extras-pdftk= to run =pdftk= on the
+current buffer or selected files in =dired=.  If a buffer does not
+have an associated file, it is provided to STDIN of the =pdftk=
+subprocess.

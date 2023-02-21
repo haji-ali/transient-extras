@@ -3,8 +3,8 @@
 ;; Author: Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/transient-extras.git
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "26.1") transient-extras)
-;; Keywords: Convenience
+;; Package-Requires: ((emacs "28.1") transient-extras)
+;; Keywords: convenience
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -22,7 +22,19 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
-;; 
+;; This package provides a simple transient menu for basic usage of
+;; `pdftk'.
+;;
+;; Typical usage
+;;
+;; (require 'transient-extras-pdftk)
+;;
+;; (with-eval-after-load 'pdf-tools
+;;   (define-key pdf-misc-minor-mode-map (kbd "C-c t") #'transient-extras-pdftk))
+;;
+;; Or simply call `transient-extras-pdftk' to run on the current
+;; buffer or selected files in `dired'.
+
 
 ;;; Code:
 
