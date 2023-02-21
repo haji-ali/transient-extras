@@ -154,7 +154,8 @@ asynchronously."
        nil nil initial-input history))))
 
 (defun transient-extras-lp--read-pages (prompt initial-input history)
-  "Read pages that will be printed.
+  "PROMPT for pages that will be printed, using INITIAL-INPUT and HISTORY.
+
 Get pages count from `pdf-info-number-of-pages' when defined and
 in `pdf-mode' and display the maximum in the prompt."
   (read-string
@@ -166,7 +167,8 @@ in `pdf-mode' and display the maximum in the prompt."
 
 (defun transient-extras-lp (buf-or-files &optional args)
   "Call `lp' with list of files or a buffer.
-BUF-OR-FILES is a buffer or a list of files. ARGS are the
+
+BUF-OR-FILES is a buffer or a list of files.  ARGS are the
 arguments that should be passed to `lp'"
   (interactive (list (transient-extras--get-default-file-list-or-buffer)))
   (unless (or (bufferp buf-or-files)
@@ -195,7 +197,8 @@ arguments that should be passed to `lp'"
              (mapconcat #'identity cmd " "))))
 
 (defun transient-extras-lp--save-options (args)
-  "Save printer options as default.
+  "Save printer ARGS as default.
+
 The options, taken from `transient' by default, are saved so
 that the next time the `transient' menu is displayed these
 options are automatically selected."
@@ -204,14 +207,14 @@ options are automatically selected."
   (message "Saved"))
 
 (defun transient-extras-lp--do-print (args)
-  "Call `transient-extras-lp' with `transient' arguments."
+  "Call `transient-extras-lp' with `transient' ARGS."
   (interactive (list (transient-args 'transient-extras-lp-menu)))
   ;; NOTE: This is relying on the order. This works with latest `transient'
   ;; but future updates might break this
   (transient-extras-lp (car args) (cdr args)))
 
 (transient-define-prefix transient-extras-lp-menu (filename)
-  "Call `lp' with various options"
+  "Call `lp' with various options."
   :init-value (lambda (obj)
                 (oset obj value transient-extras-lp-saved-options))
   :man-page "lp"
