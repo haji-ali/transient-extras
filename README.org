@@ -12,7 +12,7 @@ to common UNIX tools and applications.
 
 * transient-extras-lp
 #+CAPTION: Printing menu
-[[file:transient-extras-lp.png]]
+[[file:screenshots/transient-extras-lp.png]]
 
 =transient-extras-lp= provides a menu based on [[https://github.com/magit/transient/][transient]] to call the CUPS
 printing program =lp= on the current buffer or a selected file.
