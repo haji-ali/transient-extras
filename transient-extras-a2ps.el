@@ -3,8 +3,8 @@
 ;; Author: Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://git.sr.ht/~swflint/transient-extras-a2ps
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "28.0") (transient-extras "1.0.0"))
-;; Keywords: printer, transient, syntax-highlighting
+;; Package-Requires: ((emacs "28.1") (transient-extras "1.0.0"))
+;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
 
