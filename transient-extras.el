@@ -175,8 +175,7 @@ for the display.")
 
 (defclass transient-extras-option-dynamic-choices (transient-option)
   ((choices-function :initarg :choices-function))
-  "Class used for command line options which get their arguments
-from a function.")
+  "Class used for command line options which get their arguments from a function.")
 
 (cl-defmethod transient-infix-read :around ((obj transient-extras-option-dynamic-choices))
   "When reading with OBJ, gather options and optionally cache."
