@@ -2,8 +2,8 @@
 ;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/transient-extras.git
-;; Version: 0.0.1
-;; Package-Requires: ((emacs "26.1"))
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "26.1") (cl-lib "0.5"))
 ;; Keywords: convenience
 ;;
 ;; This file is not part of GNU Emacs.
