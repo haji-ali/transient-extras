@@ -10,9 +10,71 @@
 This package provides a set of extensions to [[https://github.com/magit/transient/][transient]] and interactive menus
 to common UNIX tools and applications.
 
+* transient-extras
+
+=transient-extras= provides a set of extensions to [[https://github.com/magit/transient/][transient]] to make
+writing the provided menus easier.  It includes the following extensions
+
+** =transient-extras-file-list-or-buffer=
+
+This provides a pre-defined argument usable in a transient.  It
+contains either the current buffer, the filename for the current
+buffer, or the names of the files currently marked in ~dired~.
+
+** =transient-extras-exclusive-switch=
+
+This class allows the definition of command line switches with options
+to be quickly cycled through.  This is similar to the default
+=transient-switches=, but allows value/label pairs to be used instead,
+for example:
+
+#+begin_src emacs-lisp
+  (transient-define-argument transient-extras-lp--orientation ()
+    :description "Print Orientation"
+    :class 'transient-extras-exclusive-switch
+    :key "o"
+    :argument-format "-oorientation-requested=%s"
+    :argument-regexp "\\(-oorientation-requested=\\(4\\|5\\|6\\)\\)"
+    :choices '(("4" . "90°(landscape)")
+               ("5" . "-90°")
+               ("6" . "180°")))
+#+end_src
+
+** =transient-extras-option-dynamic-choices=
+
+This class allows the values of an option to be determined dynamically
+through the use of a =choices-function=.  This is useful for programs
+for which option arguments are configurable externally to Emacs.  For
+example:
+
+#+begin_src emacs-lisp
+  (transient-define-argument transient-extras-a2ps-printer ()
+    :class 'transient-extras-option-dynamic-choices
+    :description "Printer"
+    :key "P"
+    :argument "-P"
+    :choices-function (transient-extras-make-command-filter-function
+                       "a2ps" '("--list=printers")
+                       (lambda (line)
+                         (when (and (string-match-p "^-" line)
+                                    (not (string-match-p "Default" line))
+                                    (not (string-match-p "Unknown" line)))
+                           (substring line 2))))
+    :prompt "Printer? ")
+#+end_src
+
+** Additional Functions
+
+*** =transient-extras-make-command-filter-function=
+
+This function is used to make a function which filters the output of a
+command.  It takes three arguments: the program name, the arguments to
+the command, and a function to filter each line of output.  An example
+of use is shown above.
+
 * transient-extras-lp
 #+CAPTION: Printing menu
-[[file:transient-extras-lp.png]]
+[[file:screenshots/transient-extras-lp.png]]
 
 =transient-extras-lp= provides a menu based on [[https://github.com/magit/transient/][transient]] to call the CUPS
 printing program =lp= on the current buffer or a selected file.
@@ -44,6 +106,8 @@ By pressing =d=, you can input the name of the printer. The command =lpstat
 [[https://github.com/haji-ali/async-completing-read][async-completing-read]] installed then the command will be run asynchronously.
 
 * transient-extras-a2ps
+#+CAPTION: a2ps menu
+[[file:screenshots/transient-extras-a2ps.png]]
 
 =transient-extras-a2ps= provides a menu to call the a2ps printing
 program on the current buffer or selected file.

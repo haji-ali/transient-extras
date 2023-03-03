@@ -2,8 +2,8 @@
 ;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>, Samuel W. Flint <swflint@flintfam.org>
 ;; URL: https://github.com/haji-ali/transient-extras.git
-;; Version: 0.0.1
-;; Package-Requires: ((emacs "26.1"))
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: convenience
 ;;
 ;; This file is not part of GNU Emacs.
@@ -175,8 +175,16 @@ for the display.")
 
 (defclass transient-extras-option-dynamic-choices (transient-option)
   ((choices-function :initarg :choices-function))
-  "Class used for command line options which get their arguments
-from a function.")
+  "Class used for command line options which get their arguments from a function.")
+
+(cl-defmethod transient-infix-read :around ((obj transient-extras-option-dynamic-choices))
+  "When reading with OBJ, gather options and optionally cache."
+  (with-slots (choices-function) obj
+    (let ((choices (funcall choices-function)))
+      (setf (oref obj choices) choices)
+      (message "Choices are %s" choices)
+      (prog1 (cl-call-next-method obj)
+        (slot-makeunbound obj 'choices)))))
 
 (defun transient-extras-filter-command-output (program arguments filter)
   "FILTER output of PROGRAM run with ARGUMENTS."
@@ -193,15 +201,6 @@ from a function.")
   "Return a function to FILTER output of PROGRAM with ARGUMENTS."
   (lambda ()
     (transient-extras-filter-command-output program arguments filter)))
-
-(cl-defmethod transient-infix-read :around ((obj transient-extras-option-dynamic-choices))
-  "When reading with OBJ, gather options and optionally cache."
-  (with-slots (choices-function) obj
-    (let ((choices (funcall choices-function)))
-      (setf (oref obj choices) choices)
-      (message "Choices are %s" choices)
-      (prog1 (cl-call-next-method obj)
-        (slot-makeunbound obj 'choices)))))
 
 
 
