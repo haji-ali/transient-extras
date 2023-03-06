@@ -2,7 +2,7 @@
 ;;
 ;; Author: Al Haji-Ali <abdo.haji.ali@gmail.com>
 ;; URL: https://github.com/haji-ali/transient-extras.git
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((emacs "28.1") (transient-extras "1.0.0"))
 ;; Keywords: convenience
 ;;
@@ -126,29 +126,26 @@ asynchronously."
         (if (fboundp 'acr-preprocess-lines-from-process)
             (async-completing-read
              prompt
-             (apply
-              'acr-preprocess-lines-from-process
-              'lines-from-process  ;; cateogry
-              preprocess-lines-fun
-              transient-extras-lp-get-printers-cmd)
+             (apply #'acr-preprocess-lines-from-process
+                    'lines-from-process  ;; cateogry
+                    preprocess-lines-fun
+                    transient-extras-lp-get-printers-cmd)
              nil nil initial-input history)
           (car (funcall preprocess-lines-fun
                         (list (async-completing-read
                                prompt
-                               (apply
-                                'acr-lines-from-process
-                                transient-extras-lp-get-printers-cmd)
+                               (apply #'acr-lines-from-process
+                                      transient-extras-lp-get-printers-cmd)
                                nil nil initial-input history)))))
       (completing-read
        prompt
        (funcall preprocess-lines-fun
                 (split-string
                  (with-temp-buffer
-                   (apply
-                    'call-process
-                    (car transient-extras-lp-get-printers-cmd)
-                    nil t nil
-                    (cdr transient-extras-lp-get-printers-cmd))
+                   (apply #'call-process
+                          (car transient-extras-lp-get-printers-cmd)
+                          nil t nil
+                          (cdr transient-extras-lp-get-printers-cmd))
                    (buffer-string))
                  "\n" 'omit-nulls))
        nil nil initial-input history))))
