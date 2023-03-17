@@ -64,7 +64,6 @@ example:
 #+end_src
 
 ** Additional Functions
-
 *** =transient-extras-make-command-filter-function=
 
 This function is used to make a function which filters the output of a
@@ -103,7 +102,30 @@ otherwise the buffer content is sent to =lp=.
 ** Additional Configuration
 By pressing =d=, you can input the name of the printer. The command =lpstat
 -a= is used to get a list of installed and network printers. If you have
-[[https://github.com/haji-ali/async-completing-read][async-completing-read]] installed then the command will be run asynchronously.
+[[https://github.com/haji-ali/async-completing-read][async-completing-read]], you may want to define the following advice to run the
+command asynchronously.
+
+#+begin_src emacs-lisp
+  (define-advice transient-extras-lp--read-printer
+      (:override (prompt initial-input history)
+                 my/transient-extras-lp--read-printer)
+    (let ((preprocess-lines-fun
+           (lambda (x)
+             (mapcar
+              (lambda (y)
+                (let ((ind (string-match "[[:space:]]" y)))
+                  (if ind
+                      (substring y nil ind)
+                    y)))
+              x))))
+      (async-completing-read
+       prompt
+       (apply #'acr-preprocess-lines-from-process
+              'lines-from-process  ;; cateogry
+              preprocess-lines-fun
+              transient-extras-lp-get-printers-cmd)
+       nil nil initial-input history)))
+#+end_src
 
 * transient-extras-a2ps
 #+CAPTION: a2ps menu
