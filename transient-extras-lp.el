@@ -107,7 +107,7 @@ short-edge\\)\\)"
 
 (defun transient-extras-lp--read-printer (prompt initial-input history)
   "PROMPT for printer name, with INITIAL-INPUT.  HISTORY, if present, is respected."
-  (let ((preprocess-lines-fun
+  (let* ((preprocess-lines-fun
          (lambda (x)
            ;; Accept only the first word in each line
            (mapcar
@@ -116,19 +116,33 @@ short-edge\\)\\)"
                 (if ind
                     (substring y nil ind)
                   y)))
-            x))))
+             x)))
+         (server
+          (cl-find-if
+           (lambda (x) (string-prefix-p "-h" x))
+           (cdr
+            ;; Do not use `transient-args' to make sure that we get the
+            ;; current set value
+            (cl-mapcan #'transient--get-wrapped-value transient--suffixes))))
+         (cmd
+          (if server
+              (append (list (car transient-extras-lp-get-printers-cmd)
+                            server)
+                      (cdr transient-extras-lp-get-printers-cmd))
+            transient-extras-lp-get-printers-cmd)))
+    (if-let (cands (with-temp-buffer
+                   (if (eq 0 (apply #'call-process (car cmd) nil
+                                    t nil (cdr cmd)))
+                       (buffer-string)
+                       nil)))
     (completing-read
      prompt
      (funcall preprocess-lines-fun
-              (split-string
-               (with-temp-buffer
-                 (apply #'call-process
-                        (car transient-extras-lp-get-printers-cmd)
-                        nil t nil
-                        (cdr transient-extras-lp-get-printers-cmd))
-                 (buffer-string))
-               "\n" 'omit-nulls))
-     nil nil initial-input history)))
+                    (split-string cands "\n" 'omit-nulls))
+           nil nil initial-input history)
+        (read-string
+         (format "[`%s' failed] %s" (car cmd) prompt)
+       initial-input history))))
 
 (defun transient-extras-lp--read-pages (prompt initial-input history)
   "PROMPT for pages that will be printed, using INITIAL-INPUT and HISTORY.
@@ -206,6 +220,10 @@ options are automatically selected."
      :class transient-option
      :prompt "Pages? "
      :reader transient-extras-lp--read-pages)
+    ("h" "Server" "-h"
+     :prompt "Server? "
+     :class transient-option
+     :always-read t)
     ("d" "Printer" "-d"
      :prompt "Printer? "
      :class transient-option
