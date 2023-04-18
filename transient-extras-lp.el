@@ -96,7 +96,7 @@ short-edge\\)\\)"
   "\"lp\" executable (with additional fixed args).")
 
 (defvar transient-extras-lp-get-printers-cmd
-  (list (executable-find "lpstat") "-a")
+  (list (executable-find "lpstat") "-e")
   "Command (with args) to get list of printers.")
 
 (defvar transient-extras-lp-saved-options nil
@@ -107,17 +107,7 @@ short-edge\\)\\)"
 
 (defun transient-extras-lp--read-printer (prompt initial-input history)
   "PROMPT for printer name, with INITIAL-INPUT.  HISTORY, if present, is respected."
-  (let* ((preprocess-lines-fun
-         (lambda (x)
-           ;; Accept only the first word in each line
-           (mapcar
-            (lambda (y)
-              (let ((ind (string-match "[[:space:]]" y)))
-                (if ind
-                    (substring y nil ind)
-                  y)))
-             x)))
-         (server
+  (let* ((server
           (cl-find-if
            (lambda (x) (string-prefix-p "-h" x))
            (cdr
@@ -137,8 +127,7 @@ short-edge\\)\\)"
                        nil)))
     (completing-read
      prompt
-     (funcall preprocess-lines-fun
-                    (split-string cands "\n" 'omit-nulls))
+         (split-string cands "\n" 'omit-nulls)
            nil nil initial-input history)
         (read-string
          (format "[`%s' failed] %s" (car cmd) prompt)
