@@ -97,6 +97,9 @@ itself."
   ((key         :initform "--")
    (argument    :initform "--")
    (reader      :initform #'transient-extras-read-file)
+   ;; Disable saving of this argument since if it is a buffer, transient
+   ;; reading the argument from `transient-history-file' will lead to errors
+   (unsavalbe :initform t)
    (always-read :initform t))
   "A transient class to read list of files.
 The slot `value' is either a list of files or a single buffer.")
