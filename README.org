@@ -151,3 +151,20 @@ specifically bound in a local map.
 
 All additional configuration and description of options may be found
 in [[info:a2ps][the a2ps info manual]].
+
+* transient-extras-mpc
+#+CAPTION: mpc menu
+[[file:screenshots/transient-extras-mpc.png]]
+
+=transient-extras-mpc= provides a menu to interface with the mpd music
+player using mpc.
+
+It may be enabled as follows (assuming =transient-extras-mpc.el= is on
+the ~load-path~).:
+
+#+begin_src emacs-lisp
+  (require 'transient-extras-mpc)
+
+  ;; Pick a free keybinding
+  (global-set-key (kbd "C-c M") #'transient-extras-mpc)
+#+end_src
