@@ -145,6 +145,53 @@ in `pdf-mode' and display the maximum in the prompt."
      prompt)
    initial-input history))
 
+
+;;; Generate printer options dynamically
+
+(defun transient-extras-lp--parse-lp-options (&optional printer)
+  "Parse options for PRINTER from lpoptions output.
+
+The command lpoptions -l -p PRINTER will be run, and parsed into
+the following form:
+
+\( ( ( name human-readable ) values+ )* )"
+  (when-let ((options (cons "-l"
+                            (if printer
+                                (list "-p" printer)
+                              nil)))
+             (output (with-temp-buffer
+                       (if (= 0 (apply #'call-process "lpoptions" nil t nil options))
+                           (buffer-string)
+                         nil)))
+             (lines (split-string output "\n" 'omit-nulls)))
+    (mapcar (lambda (line)
+              (cl-destructuring-bind (name-and-desc options) (split-string line ": ")
+                (cons (split-string name-and-desc "/")
+                      (mapcar (lambda (opt)
+                                (if (string-match-p (rx bol "*") opt)
+                                    (substring opt 1)
+                                  opt))
+                              (split-string options " ")))))
+            lines)))
+
+(defun transient-extras-lp--options-to-prefixes (&optional printer)
+  "Generate a prefix group for the options of PRINTER.
+
+See also `transient-extras-lp--parse-lp-options'."
+  (vector (vconcat ["Printer Options"]
+                   (cl-map 'vector
+                           (lambda (desc)
+                             (cl-destructuring-bind ((option name) &rest possible-values) desc
+                               (list (format "O%s" (substring option 0 2))
+                                     name
+                                     (format "-o %s=" option)
+                                     :prompt name
+                                     :choices possible-values)))
+                           (transient-extras-lp--parse-lp-options printer)))))
+
+
+
+;;;
 (defun transient-extras-lp (buf-or-files &optional args)
   "Call `lp' with list of files or a buffer.
 
